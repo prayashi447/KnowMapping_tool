@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KnowMap · secure auth</title>
+    <!-- modern clean font, subtle background, smooth cards -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 (free icons) for a touch of personality -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* global reset & design system */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(145deg, #f6f9fc 0%, #edf2f7 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
+        /* main card – soft, elevated, rounded */
+        .auth-container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(8px);
+            background: #ffffff;
+            border-radius: 40px;
+            box-shadow: 
+                0 20px 35px -8px rgba(0,20,40,0.15),
+                0 5px 12px -6px rgba(0,0,0,0.02);
+            padding: 2.5rem 2.2rem;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        /* header area with KnowMap identity */
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e9eef3;
+            padding-bottom: 1.2rem;
+        }
+        .app-header i {
+            font-size: 2rem;
+            color: #2563eb;
+            background: #f0f7ff;
+            padding: 12px;
+            border-radius: 18px;
+            box-shadow: 0 6px 12px -8px #0a2c4e;
+        }
+        .app-header h1 {
+            font-weight: 620;
+            font-size: 1.9rem;
+            letter-spacing: -0.02em;
+            color: #0c4a6e;
+            margin: 0;
+        }
+        .app-header span {
+            background: #dbeafe;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #1e40af;
+            margin-left: 6px;
+            text-transform: uppercase;
+        }
+
+        /* cards for each section */
+        .card {
+            background: white;
+            border-radius: 28px;
+            padding: 1.8rem 1.9rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 6px 18px rgba(0,32,64,0.04);
+            border: 1px solid #f1f5f9;
+            transition: all 0.2s ease;
+        }
+        .card:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 12px 22px rgba(0,70,120,0.06);
+        }
+
+        h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 560;
+            margin-top: 0;
+            margin-bottom: 1.6rem;
+            color: #0f2c3d;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.6rem;
+        }
+        h2 i {
+            color: #2563eb;
+            font-size: 1.4rem;
+            width: 32px;
+            text-align: center;
+        }
+
+        /* input fields – modern, large, clean */
+        .input-group {
+            display: flex;
+            align-items: center;
+            background: #f8fafd;
+            border-radius: 60px;
+            padding: 0.2rem 1.2rem;
+            margin-bottom: 1rem;
+            border: 1.5px solid #e6edf3;
+            transition: all 0.15s;
+        }
+        .input-group:hover, .input-group:focus-within {
+            border-color: #94a3b8;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0,100,200,0.04);
+        }
+        .input-group i {
+            color: #6b87a0;
+            font-size: 1.1rem;
+            width: 24px;
+            margin-right: 6px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 1rem 0.8rem 1rem 0.2rem;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            font-weight: 450;
+            color: #1e2f3e;
+            outline: none;
+        }
+        .input-group input::placeholder {
+            color: #94a9bc;
+            font-weight: 400;
+            opacity: 0.8;
+        }
+
+        /* button style – primary, soft but definite */
+        .btn {
+            background: #1e3f5c;
+            border: none;
+            color: white;
+            font-weight: 520;
+            font-size: 1rem;
+            padding: 0.9rem 1.8rem;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: 0.18s;
+            border: 1px solid #173445;
+            letter-spacing: 0.3px;
+            width: 100%;
+            margin-top: 12px;
+            box-shadow: 0 8px 16px -8px #0a2a3c;
+        }
+        .btn i {
+            font-size: 1rem;
+        }
+        .btn:hover {
+            background: #256f94;
+            border-color: #1e5775;
+            transform: scale(1.01);
+            box-shadow: 0 14px 22px -10px #0e3f54;
+        }
+        .btn:active {
+            background: #143e53;
+            transform: scale(0.98);
+        }
+
+        /* secondary button for protected route */
+        .btn-outline {
+            background: white;
+            color: #1e3f5c;
+            border: 1.8px solid #cbdde9;
+            box-shadow: none;
+            margin-top: 0;
+        }
+        .btn-outline i {
+            color: #2563eb;
+        }
+        .btn-outline:hover {
+            background: #f0f7ff;
+            border-color: #6f9fbf;
+            color: #0b4057;
+        }
+
+        /* ----- REDESIGNED DATASET SELECTION UI (only section changed) ----- */
+        .dataset-section {
+            margin-top: 0.5rem;
+            margin-bottom: 1.8rem;
+            background: white;
+            border-radius: 28px;
+            padding: 1.8rem 1.9rem;
+            box-shadow: 0 6px 18px rgba(0,32,64,0.04);
+            border: 1px solid #f1f5f9;
+        }
+        .dataset-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.4rem;
+            font-weight: 560;
+            margin-bottom: 1.6rem;
+            color: #0f2c3d;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.7rem;
+        }
+        .dataset-title i {
+            color: #2563eb;
+            font-size: 1.4rem;
+        }
+        /* topic row – combines icon and modern input */
+        .topic-wrapper {
+            display: flex;
+            align-items: center;
+            background: #f8fafd;
+            border-radius: 60px;
+            padding: 0.2rem 1.2rem;
+            border: 1.5px solid #e6edf3;
+            transition: all 0.15s;
+            margin-bottom: 1.8rem;
+        }
+        .topic-wrapper:hover, .topic-wrapper:focus-within {
+            border-color: #94a3b8;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0,100,200,0.04);
+        }
+        .topic-wrapper i {
+            color: #6b87a0;
+            font-size: 1.1rem;
+            width: 28px;
+            margin-right: 6px;
+        }
+        .topic-wrapper input {
+            width: 100%;
+            padding: 0.9rem 0.8rem 0.9rem 0.2rem;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            font-weight: 450;
+            color: #1e2f3e;
+            outline: none;
+        }
+        .topic-wrapper input::placeholder {
+            color: #94a9bc;
+        }
+        /* sources multiselect – redesigned as checkbox cards */
+        .sources-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1e405b;
+            margin-bottom: 1rem;
+        }
+        .sources-label i {
+            color: #3b7a9c;
+            font-size: 1rem;
+        }
+        .checkbox-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.8rem;
+        }
+        .checkbox-card {
+            flex: 1 1 130px;
+            background: #f9fcff;
+            border: 1.5px solid #e2eaf0;
+            border-radius: 40px;
+            padding: 0.7rem 1rem 0.7rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.15s;
+            cursor: pointer;
+            color: #1e3f5c;
+            font-weight: 500;
+        }
+        .checkbox-card:hover {
+            background: #e8f0fe;
+            border-color: #8bb3cc;
+        }
+        .checkbox-card i {
+            color: #3b82f6;
+            font-size: 1rem;
+            width: 20px;
+            text-align: center;
+        }
+        .checkbox-card input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #2563eb;
+            border-radius: 6px;
+            margin-left: auto;
+            cursor: pointer;
+        }
+        /* customizing the multiselect default is hidden; we replace with checkbox grid */
+        #sources {
+            display: none;  /* hide original <select multiple> */
+        }
+        /* dataset action button – matches primary btn but kept distinct */
+        .btn-dataset {
+            background: #1a4b64;
+            border: none;
+            color: white;
+            font-weight: 520;
+            font-size: 1rem;
+            padding: 0.9rem 2rem;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: 0.18s;
+            border: 1px solid #0f3e52;
+            width: 100%;
+            box-shadow: 0 8px 16px -8px #0a2a3c;
+            margin-top: 0.2rem;
+        }
+        .btn-dataset i {
+            font-size: 1rem;
+        }
+        .btn-dataset:hover {
+            background: #286f8b;
+            border-color: #1d5a71;
+            transform: scale(1.01);
+        }
+        /* keep protected card style intact */
+        .protected-card {
+            background: white;
+            border-radius: 28px;
+            padding: 1.5rem 1.9rem;
+            margin-bottom: 2rem;
+            border: 1px solid #f1f5f9;
+            display: flex;
+            flex-direction: column;
+        }
+        .protected-card h2 {
+            margin-bottom: 1rem;
+        }
+        /* output area unchanged */
+        .output-area {
+            margin-top: 1.2rem;
+            background: #0e1f2c;
+            border-radius: 20px;
+            padding: 1.4rem 1.6rem;
+            color: #e2eef9;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            border-left: 6px solid #3b82f6;
+            box-shadow: inset 0 0 0 1px #2c4353;
+            word-break: break-word;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+        .output-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #b1c8d9;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        .output-label i {
+            color: #6ab0f7;
+        }
+
+        .row-2col {
+            display: flex;
+            gap: 1.8rem;
+            flex-wrap: wrap;
+        }
+        .col {
+            flex: 1 1 260px;
+        }
+
+        .footnote {
+            margin-top: 1.2rem;
+            font-size: 0.8rem;
+            color: #657c92;
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            border-top: 1px solid #dfe8f0;
+            padding-top: 1.6rem;
+        }
+        .footnote i {
+            margin-right: 6px;
+        }
+        hr {
+            display: none;
+        }
+        /* ensure original select is hidden, we use checkbox facade */
+        .hidden-select {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <!-- app header -->
+        <div class="app-header">
+            <i class="fas fa-map-location-dot"></i>
+            <h1>KnowMap <span>auth v1</span></h1>
+        </div>
+
+        <!-- register + login side by side on larger screens (exactly as before) -->
+        <div class="row-2col">
+            <!-- REGISTER CARD (unchanged) -->
+            <div class="col">
+                <div class="card">
+                    <h2><i class="fas fa-pen-to-square"></i> Register</h2>
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input id="reg_username" placeholder="Username" autocomplete="off">
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input id="reg_email" placeholder="Email" type="email" autocomplete="off">
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input id="reg_password" type="password" placeholder="Password">
+                    </div>
+                    <button class="btn" onclick="register()">
+                        <i class="fas fa-user-plus"></i> Create account
+                    </button>
+                </div>
+            </div>
+        
+            <!-- LOGIN CARD (unchanged) -->
+            <div class="col">
+                <div class="card">
+                    <h2><i class="fas fa-key"></i> Login</h2>
+                    <div class="input-group">
+                        <i class="fas fa-user-circle"></i>
+                        <input id="login_username" placeholder="Username" autocomplete="username">
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input id="login_password" type="password" placeholder="Password">
+                    </div>
+                    <button class="btn" onclick="login()">
+                        <i class="fas fa-sign-in-alt"></i> Sign in
+                    </button>
+                </div>
+            </div>
+        </div> <!-- end row-2col -->
+
+        <!-- ========== REDESIGNED DATASET SELECTION – ONLY UI changed, logic intact ========== -->
+        <div class="dataset-section">
+            <div class="dataset-title">
+                <i class="fas fa-database"></i> 
+                <span>Dataset selection</span>
+            </div>
+            
+            <!-- Topic input – restyled but same id -->
+            <div class="topic-wrapper">
+                <i class="fas fa-tag"></i>
+                <input id="topic" placeholder="Enter topic (e.g., machine learning, climate)" autocomplete="off">
+            </div>
+            
+            <!-- Sources label + hidden original select (preserved for JS) -->
+            <div class="sources-label">
+                <i class="fas fa-cubes"></i> 
+                <span>Select data sources</span>
+            </div>
+            
+            <!-- Original select is hidden but kept with same id – required for loadDataset() -->
+            <select id="sources" multiple class="hidden-select" style="display:none;" aria-hidden="true">
+                <option value="wikipedia">Wikipedia</option>
+                <option value="arxiv">ArXiv</option>
+                <option value="news">News</option>
+            </select>
+            
+            <!-- Modern checkbox grid – visually selects/deselects the hidden <option> elements -->
+            <div class="checkbox-grid" id="checkboxSourceGrid">
+                <!-- wikipedia card -->
+                <label class="checkbox-card" data-value="wikipedia">
+                    <i class="fas fa-wikipedia-w"></i> Wikipedia
+                    <input type="checkbox" value="wikipedia" checked>
+                </label>
+                <!-- arxiv card -->
+                <label class="checkbox-card" data-value="arxiv">
+                    <i class="fas fa-book"></i> ArXiv
+                    <input type="checkbox" value="arxiv">
+                </label>
+                <!-- news card -->
+                <label class="checkbox-card" data-value="news">
+                    <i class="fas fa-newspaper"></i> News
+                    <input type="checkbox" value="news">
+                </label>
+            </div>
+
+            <!-- Load dataset button – enhanced, but same onclick and id untouched -->
+            <button class="btn-dataset" onclick="loadDataset()">
+                <i class="fas fa-cloud-download-alt"></i> Load dataset
+                <span style="opacity:0.8; font-weight:400; margin-left:4px;">(JWT secured)</span>
+            </button>
+        </div>
+
+        <!-- PROTECTED DATA CARD (unchanged, kept exactly as original) -->
+        <div class="protected-card" style="margin-bottom: 2rem; padding: 1.5rem 1.9rem;">
+            <h2><i class="fas fa-shield-hal"></i> Protected resource</h2>
+            <button class="btn btn-outline" onclick="getProtected()" style="width:100%; margin-top:0;">
+                <i class="fas fa-lock-open"></i> Check protected route
+            </button>
+        </div>
+        
+        <!-- OUTPUT with nice header (unchanged) -->
+        <div class="output-label">
+            <i class="fas fa-terminal"></i> server response
+        </div>
+        <pre id="output" class="output-area">⚡ ready to authenticate ...</pre>
+        
+        <!-- subtle info footer (purely decorative, unchanged) -->
+        <div class="footnote">
+            <span><i class="far fa-circle-check"></i> JWT ready</span>
+            <span><i class="far fa-clock"></i> KnowMap API</span>
+            <span><i class="fas fa-plug"></i> 127.0.0.1:8000</span>
+        </div>
+    </div>
+
+    <script>
+        // preserve full original functionality, API_URL unchanged
+        const API_URL = "http://127.0.0.1:8000";
+
+        // set default output message when page loads (non‑intrusive)
+        window.addEventListener('DOMContentLoaded', () => {
+            const out = document.getElementById("output");
+            if (out.innerText === "" || out.innerText === "⚡ ready to authenticate ...") {
+                out.innerText = "⚡ ready to authenticate ...";
+            }
+            // Synchronize hidden <select multiple> with checkboxes on page load
+            syncSelectFromCheckboxes();
+        });
+
+        // ---------- NEW: keep hidden <select> in sync with checkbox grid ----------
+        // This ensures original loadDataset() works without any change.
+        function syncSelectFromCheckboxes() {
+            const select = document.getElementById('sources');
+            const checkboxes = document.querySelectorAll('.checkbox-card input[type="checkbox"]');
+            
+            // clear all selections in hidden select
+            for (let opt of select.options) {
+                opt.selected = false;
+            }
+            
+            // set selected based on checkboxes
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    for (let opt of select.options) {
+                        if (opt.value === cb.value) {
+                            opt.selected = true;
+                            break;
+                        }
+                    }
+                }
+            });
+        }
+
+        // optional: attach listeners to checkboxes to update select when toggled
+        // this guarantees loadDataset() always uses the correct selected sources.
+        (function attachCheckboxListeners() {
+            const checkboxes = document.querySelectorAll('.checkbox-card input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', function(e) {
+                    syncSelectFromCheckboxes();
+                });
+            });
+        })();
+
+        // ORIGINAL FUNCTIONS - NO CHANGES EXCEPT ensure sync before loadDataset (inline)
+        async function register() {
+            const username = document.getElementById("reg_username").value;
+            const email = document.getElementById("reg_email").value;
+            const password = document.getElementById("reg_password").value;
+
+            const response = await fetch(`${API_URL}/register?username=${username}&email=${email}&password=${password}`, {
+                method: "POST"
+            });
+
+            const data = await response.json();
+            document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+        }
+
+        async function login() {
+            const username = document.getElementById("login_username").value;
+            const password = document.getElementById("login_password").value;
+
+            const response = await fetch(`${API_URL}/login?username=${username}&password=${password}`, {
+                method: "POST"
+            });
+
+            const data = await response.json();
+
+            if (data.access_token) {
+                localStorage.setItem("token", data.access_token);
+            }
+
+            document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+        }
+
+        async function getProtected() {
+            const token = localStorage.getItem("token");
+
+            const response = await fetch(`${API_URL}/protected`, {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+            const data = await response.json();
+            document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+        }
+
+        // loadDataset is 100% identical to original – works because hidden select is updated via sync.
+        async function loadDataset() {
+            // ensure the hidden select reflects latest checkbox state (redundant but safe)
+            syncSelectFromCheckboxes();
+
+            const topic = document.getElementById("topic").value;
+            const select = document.getElementById("sources");
+            const selected = Array.from(select.selectedOptions).map(option => option.value);
+
+            const token = localStorage.getItem("token");
+
+            const response = await fetch(`${API_URL}/load-dataset`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    sources: selected,
+                    topic: topic
+                })
+            });
+
+            const data = await response.json();
+            document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+        }
+
+    </script>
+
+    <!-- small reset for pre existing content (kept exactly) -->
+    <script>
+        (function overrideEmptyPre() {
+            const pre = document.getElementById('output');
+            if (!pre || pre.innerText.trim() === '') {
+                pre.innerText = "⚡ ready to authenticate ...";
+            }
+        })();
+    </script>
+</body>
+</html>
