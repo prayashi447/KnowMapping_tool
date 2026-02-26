@@ -1,0 +1,11 @@
+flask
+pandas
+networkx
+transformers
+torch
+sentence-transformers
+spacy
+python-dotenv
+
+# For visualization
+pyvis
